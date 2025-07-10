@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Định Giá BĐS Việt Nam 2025</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:10px}
+        .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+        .header{background:linear-gradient(135deg,#2c3e50,#3498db);color:#fff;padding:20px;text-align:center}
+        .header h1{font-size:1.8em;margin-bottom:5px}
+        .main{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px}
+        .form-section{background:#f8f9fa;padding:20px;border-radius:10px}
+        .result-section{padding:20px;border:1px solid #e9ecef;border-radius:10px}
+        .form-group{margin-bottom:12px}
+        .form-group label{display:block;margin-bottom:3px;font-weight:600;color:#2c3e50;font-size:14px}
+        .form-group input,.form-group select{width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:14px}
+        .form-group input:focus,.form-group select:focus{outline:none;border-color:#3498db}
+        .btn{background:linear-gradient(135deg,#3498db,#2980b9);color:#fff;padding:10px;border:none;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:10px}
+        .btn:hover{transform:translateY(-1px)}
+        .result-card{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;padding:15px;border-radius:8px;text-align:center;margin-bottom:15px;display:none}
+        .result-card .price{font-size:1.8em;font-weight:bold}
+        .result-card .sub{font-size:1em;opacity:0.9;margin-top:5px}
+        .factors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+        .factor{background:#f8f9fa;padding:8px;border-radius:5px;border-left:3px solid #3498db;font-size:13px}
+        .factor strong{color:#2c3e50;display:block}
+        .factor-value{color:#27ae60;font-weight:bold}
+        .chart{margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px}
+        .chart-bar{display:flex;align-items:center;margin:8px 0}
+        .chart-label{width:80px;font-size:12px;font-weight:600}
+        .chart-progress{flex:1;height:20px;background:#e9ecef;border-radius:10px;margin:0 8px;overflow:hidden}
+        .chart-fill{height:100%;border-radius:10px;transition:width 0.5s}
+        .chart-value{font-size:12px;font-weight:bold;min-width:70px;text-align:right}
+        .recommendation{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;padding:15px;border-radius:8px;margin:15px 0;display:none}
+        .recommendation h4{margin-bottom:8px}
+        .alert{padding:12px;margin:10px 0;border-radius:5px;border-left:4px solid #3498db;background:#d1ecf1;color:#0c5460;font-size:14px}
+        .loading{display:none;text-align:center;padding:20px}
+        .spinner{border:3px solid #f3f3f3;border-top:3px solid #3498db;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 10px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .tabs{display:flex;border-bottom:2px solid #e9ecef;margin-bottom:15px}
+        .tab{padding:8px 16px;background:none;border:none;cursor:pointer;font-weight:600;color:#7f8c8d;border-bottom:2px solid transparent}
+        .tab.active{color:#3498db;border-bottom:2px solid #3498db}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .market{background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;padding:15px;border-radius:8px;margin:15px 0}
+        .trend{margin:8px 0;padding:8px;background:rgba(255,255,255,0.1);border-radius:4px;font-size:13px}
+        .footer{background:#2c3e50;color:#fff;padding:15px;text-align:center;font-size:13px}
+        @media(max-width:768px){.main{grid-template-columns:1fr}.factors{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Công Cụ Định Giá BĐS Việt Nam 2025</h1>
+            <p>Định giá chính xác với dữ liệu thị trường cập nhật</p>
+        </div>
+
+        <div class="main">
+            <div class="form-section">
+                <h3>📋 Thông Tin BĐS</h3>
+                <form id="form">
+                    <div class="form-group">
+                        <label>Loại BĐS *</label>
+                        <select id="type" required>
+                            <option value="">Chọn loại</option>
+                            <option value="nha_pho">Nhà phố</option>
+                            <option value="chung_cu">Chung cư</option>
+                            <option value="biet_thu">Biệt thự</option>
+                            <option value="dat_nen">Đất nền</option>
+                            <option value="shophouse">Shophouse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tỉnh/TP *</label>
+                        <select id="province" required>
+                            <option value="">Chọn tỉnh</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quận/Huyện *</label>
+                        <select id="district" required>
+                            <option value="">Chọn quận</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diện tích (m²) *</label>
+                        <input type="number" id="area" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mặt tiền (m)</label>
+                        <input type="number" id="frontage" min="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Tuổi công trình</label>
+                        <input type="number" id="age" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Pháp lý</label>
+                        <select id="legal">
+                            <option value="1.0">Sổ đỏ</option>
+                            <option value="0.95">Sổ hồng</option>
+                            <option value="0.85">Giấy tờ khác</option>
+                            <option value="0.7">Chưa có sổ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hướng nhà</label>
+                        <select id="direction">
+                            <option value="1.1">Đông Nam</option>
+                            <option value="1.05">Nam</option>
+                            <option value="1.0">Đông</option>
+                            <option value="0.95">Bắc</option>
+                            <option value="0.9">Tây</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Vị trí đường</label>
+                        <select id="road">
+                            <option value="1.2">Mặt tiền lớn</option>
+                            <option value="1.1">Đường chính</option>
+                            <option value="1.0">Đường nội bộ</option>
+                            <option value="0.8">Hẻm xe hơi</option>
+                            <option value="0.7">Hẻm nhỏ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tình trạng</label>
+                        <select id="condition">
+                            <option value="1.1">Mới xây</option>
+                            <option value="1.0">Tốt</option>
+                            <option value="0.95">Khá</option>
+                            <option value="0.85">Trung bình</option>
+                            <option value="0.7">Cần sửa</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">🔍 Định Giá</button>
+                </form>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Đang tính toán...</p>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('result')">Kết Quả</button>
+                    <button class="tab" onclick="showTab('analysis')">Phân Tích</button>
+                    <button class="tab" onclick="showTab('market')">Thị Trường</button>
+                </div>
+
+                <div id="result" class="tab-content active">
+                    <div class="alert">
+                        <strong>💡 Hướng dẫn:</strong> Điền thông tin bên trái để định giá
+                    </div>
+                    <div class="result-card" id="priceCard">
+                        <h3>💰 Giá Trị Ước Tính</h3>
+                        <div class="price" id="totalPrice">0 VNĐ</div>
+                        <div class="sub" id="pricePerM2">0 VNĐ/m²</div>
+                    </div>
+                    <div class="chart" id="chartDiv" style="display:none">
+                        <h4>📊 So Sánh Giá</h4>
+                        <div id="chart"></div>
+                    </div>
+                    <div class="recommendation" id="advice">
+                        <h4>🎯 Khuyến Nghị</h4>
+                        <p id="adviceText"></p>
+                    </div>
+                </div>
+
+                <div id="analysis" class="tab-content">
+                    <h3>🔍 Phân Tích Chi Tiết</h3>
+                    <div class="factors" id="factors"></div>
+                </div>
+
+                <div id="market" class="tab-content">
+                    <div class="market">
+                        <h4>📈 Thị Trường 2025</h4>
+                        <div class="trend"><strong>Tăng trưởng:</strong> 8-12% so với 2024</div>
+                        <div class="trend"><strong>Khu vực hot:</strong> TP.HCM, Hà Nội, Đà Nẵng</div>
+                        <div class="trend"><strong>Xu hướng:</strong> Căn hộ cao cấp, shophouse</div>
+                        <div class="trend"><strong>Lãi suất:</strong> 8-10%/năm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Công Cụ Định Giá BĐS 2025</strong> - Kết quả mang tính tham khảo</p>
+        </div>
+    </div>
+
+    <script>
+        // Database giá BĐS 2025
+        const db = {
+            "TP. Hồ Chí Minh": {
+                "Quận 1": 600000000, "Quận 2": 110000000, "Thành phố Thủ Đức": 80000000,
+                "Quận 3": 450000000, "Quận 4": 350000000, "Quận 5": 320000000,
+                "Quận 6": 280000000, "Quận 7": 200000000, "Quận 8": 180000000,
+                "Quận 10": 400000000, "Quận 11": 300000000, "Quận 12": 120000000,
+                "Quận Bình Thạnh": 250000000, "Quận Gò Vấp": 200000000,
+                "Quận Phú Nhuận": 380000000, "Quận Tân Bình": 320000000,
+                "Quận Tân Phú": 220000000, "Quận Bình Tân": 150000000,
+                "Huyện Hóc Môn": 80000000, "Huyện Củ Chi": 60000000,
+                "Huyện Nhà Bè": 70000000, "Huyện Cần Giờ": 30000000
+            },
+            "Hà Nội": {
+                "Quận Hoàn Kiếm": 900000000, "Quận Ba Đình": 420000000,
+                "Quận Đống Đa": 350000000, "Quận Hai Bà Trưng": 320000000,
+                "Quận Hoàng Mai": 200000000, "Quận Thanh Xuân": 280000000,
+                "Quận Cầu Giấy": 300000000, "Quận Nam Từ Liêm": 180000000,
+                "Quận Bắc Từ Liêm": 160000000, "Quận Hà Đông": 140000000,
+                "Quận Long Biên": 120000000, "Quận Tây Hồ": 250000000
+            },
+            "Đà Nẵng": {
+                "Quận Hải Châu": 200000000, "Quận Thanh Khê": 150000000,
+                "Quận Sơn Trà": 180000000, "Quận Ngũ Hành Sơn": 160000000,
+                "Quận Liên Chiểu": 100000000, "Quận Cẩm Lệ": 90000000,
+                "Huyện Hòa Vang": 60000000, "Huyện Hoàng Sa": 50000000
+            },
+            "Hải Phòng": {"Trung tâm": 140000000},
+            "Cần Thơ": {"Trung tâm": 135000000},
+            "Vũng Tàu": {"Trung tâm": 120000000},
+            "Nha Trang": {"Trung tâm": 100000000},
+            "Huế": {"Trung tâm": 80000000},
+            "Biên Hòa": {"Trung tâm": 70000000},
+            "Thủ Dầu Một": {"Trung tâm": 65000000},
+            "Buôn Ma Thuột": {"Trung tâm": 45000000},
+            "Quy Nhon": {"Trung tâm": 55000000},
+            "Pleiku": {"Trung tâm": 35000000},
+            "Vinh": {"Trung tâm": 40000000},
+            "Hạ Long": {"Trung tâm": 90000000},
+            "Bắc Ninh": {"Trung tâm": 60000000},
+            "Việt Trì": {"Trung tâm": 35000000},
+            "Thái Nguyên": {"Trung tâm": 40000000},
+            "Nam Định": {"Trung tâm": 30000000},
+            "Hải Dương": {"Trung tâm": 35000000},
+            "Ninh Bình": {"Trung tâm": 25000000}
+        };
+
+        const typeMultiplier = {
+            nha_pho: 1.0, chung_cu: 0.8, biet_thu: 1.5, 
+            dat_nen: 0.7, shophouse: 1.3
+        };
+
+        // Khởi tạo dropdown
+        function init() {
+            const provinceSelect = document.getElementById('province');
+            Object.keys(db).forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+
+            provinceSelect.addEventListener('change', function() {
+                const districtSelect = document.getElementById('district');
+                districtSelect.innerHTML = '<option value="">Chọn quận</option>';
+
+                if (this.value && db[this.value]) {
+                    Object.keys(db[this.value]).forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Tính giá
+        function calculate(data) {
+            const basePrice = db[data.province]?.[data.district] || 50000000;
+            const typeMult = typeMultiplier[data.type] || 1.0;
+            const legal = parseFloat(data.legal) || 1.0;
+            const direction = parseFloat(data.direction) || 1.0;
+            const road = parseFloat(data.road) || 1.0;
+            const condition = parseFloat(data.condition) || 1.0;
+
+            const age = parseInt(data.age) || 0;
+            const ageFactor = age > 0 ? Math.max(0.5, 1.0 - (age * 0.01)) : 1.0;
+
+            const frontage = parseFloat(data.frontage) || 0;
+            const frontageFactor = frontage > 0 ? 1.0 + (frontage * 0.02) : 1.0;
+
+            const pricePerM2 = basePrice * typeMult * legal * direction * road * condition * ageFactor * frontageFactor;
+            const totalPrice = pricePerM2 * parseFloat(data.area);
+
+            return {
+                total: totalPrice,
+                perM2: pricePerM2,
+                base: basePrice,
+                factors: {
+                    'Loại BĐS': typeMult,
+                    'Pháp lý': legal,
+                    'Hướng nhà': direction,
+                    'Vị trí đường': road,
+                    'Tình trạng': condition,
+                    'Tuổi công trình': ageFactor,
+                    'Mặt tiền': frontageFactor
+                }
+            };
+        }
+
+        // Format tiền
+        function formatMoney(amount) {
+            if (amount >= 1000000000) {
+                return (amount / 1000000000).toFixed(1) + ' tỷ VNĐ';
+            } else if (amount >= 1000000) {
+                return (amount / 1000000).toFixed(0) + ' triệu VNĐ';
+            }
+            return amount.toLocaleString('vi-VN') + ' VNĐ';
+        }
+
+        // Hiển thị kết quả
+        function showResult(result, data) {
+            document.getElementById('priceCard').style.display = 'block';
+            document.getElementById('totalPrice').textContent = formatMoney(result.total);
+            document.getElementById('pricePerM2').textContent = formatMoney(result.perM2) + '/m²';
+
+            // Biểu đồ
+            const chartDiv = document.getElementById('chartDiv');
+            const chart = document.getElementById('chart');
+            chartDiv.style.display = 'block';
+            chart.innerHTML = '';
+
+            const comparisons = [
+                {label: 'Giá cơ sở', value: result.base, color: '#3498db'},
+                {label: 'Giá thực tế', value: result.perM2, color: '#2ecc71'},
+                {label: 'TB khu vực', value: result.base * 0.9, color: '#f39c12'}
+            ];
+
+            const maxValue = Math.max(...comparisons.map(c => c.value));
+
+            comparisons.forEach(comp => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                const percentage = (comp.value / maxValue) * 100;
+                bar.innerHTML = `
+                    <div class="chart-label">${comp.label}</div>
+                    <div class="chart-progress">
+                        <div class="chart-fill" style="width:${percentage}%;background:${comp.color}"></div>
+                    </div>
+                    <div class="chart-value">${formatMoney(comp.value)}</div>
+                `;
+                chart.appendChild(bar);
+            });
+
+            // Phân tích
+            const factors = document.getElementById('factors');
+            factors.innerHTML = '';
+            Object.entries(result.factors).forEach(([key, value]) => {
+                const factor = document.createElement('div');
+                factor.className = 'factor';
+                const impact = value > 1 ? '+' + ((value - 1) * 100).toFixed(1) + '%' : 
+                              value < 1 ? ((value - 1) * 100).toFixed(1) + '%' : '0%';
+                factor.innerHTML = `<strong>${key}</strong><span class="factor-value">${impact}</span>`;
+                factors.appendChild(factor);
+            });
+
+            // Khuyến nghị
+            const advice = document.getElementById('advice');
+            const adviceText = document.getElementById('adviceText');
+            advice.style.display = 'block';
+
+            if (result.perM2 > 300000000) {
+                adviceText.textContent = '🔥 Khu vực cao cấp - Tiềm năng tăng giá ổn định, phù hợp đầu tư dài hạn.';
+            } else if (result.perM2 > 100000000) {
+                adviceText.textContent = '📈 Khu vực phát triển - Cơ hội đầu tư tốt, có thể tăng giá 2-3 năm tới.';
+            } else {
+                adviceText.textContent = '💡 Khu vực mới nổi - Giá hợp lý, phù hợp mua ở hoặc đầu tư ngắn hạn.';
+            }
+        }
+
+        // Xử lý form
+        document.getElementById('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const data = {
+                type: document.getElementById('type').value,
+                province: document.getElementById('province').value,
+                district: document.getElementById('district').value,
+                area: document.getElementById('area').value,
+                frontage: document.getElementById('frontage').value,
+                age: document.getElementById('age').value,
+                legal: document.getElementById('legal').value,
+                direction: document.getElementById('direction').value,
+                road: document.getElementById('road').value,
+                condition: document.getElementById('condition').value
+            };
+
+            if (!data.type || !data.province || !data.district || !data.area) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+
+            setTimeout(() => {
+                const result = calculate(data);
+                showResult(result, data);
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        });
+
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Khởi tạo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
